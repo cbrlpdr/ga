@@ -1,10 +1,12 @@
-from pyeasyga import pyeasyga
+from pyeasyga import pyeasyga as galg
 import random
 import itertools
+import matplotlib.pyplot as plt
+import numpy as np
 
 #data = [("A",20), ("B",50), ("C",75), ("D",25), ("E",25), ("F",78)]
-data = [("A",25),("B",42),("C",37),("D",40),("E",27),("F",43),("G",36),("H",-123),("I",-210)]
-ga = pyeasyga.GeneticAlgorithm(data,8,100,0.9,0.8,True,True)
+data = [("A",5,5),("B",3,10),("C",5,12),("D",16,2),("E",15,9),("F",21,21),("G",22,20)]
+ga = galg.GeneticAlgorithm(data,20,500,0.8,0.4,True,True)
 
 def create_individual(data):
     numClusters=3
@@ -17,13 +19,14 @@ def fitness(individual, data):
     lstSomatorios = []
     for i in range(numClusters):
         lsProfit=[]
-        for (selected, (_, profit)) in zip(individual, data):
-            if(selected == i): lsProfit.append(profit)
+        for (selected, (_, x,y)) in zip(individual, data):
+            if(selected == i): lsProfit.append((x,y))
         
         sm=0
         for a in itertools.combinations(lsProfit,2):
-            for i in range(len(a)-1):
-                sm+=abs(a[i]-a[i+1]) 
+            A = a[0]
+            B = a[1]
+            sm+=pow(abs(pow(A[0]-B[0],2)+pow(A[1]-B[1],2)),0.5)
         lstSomatorios.append(sm*len(lsProfit))
 
     for p in lstSomatorios:
@@ -40,3 +43,18 @@ ga.run()
     #print (individual)
 
 print (ga.best_individual())
+bestind=ga.best_individual()
+cromossome=bestind[1]
+
+colorset=["#f00","#0f0","#00f","#0ff"]
+fig, ax = plt.subplots()
+numClusters=3
+for clusterInd in range(numClusters):
+    i=0
+    for pt in data:
+        if(clusterInd==cromossome[i]):
+            ax.plot(pt[1],pt[2],"*",c=colorset[clusterInd])
+            ax.text(pt[1]-0.15,pt[2]+0.4,data[i][0])
+        i+=1
+
+plt.show()
