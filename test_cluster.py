@@ -7,8 +7,19 @@ import numpy as np
 global pmVec
 pmVec=[(0,0),(0,0),(0,0)]
 
-data = [("A",5,5),("B",3,10),("C",5,12),("D",16,2),("E",15,9),("F",21,21),("G",22,20)]
-ga = galg.GeneticAlgorithm(data,20,1000,1,0.4,True,True)
+#data = [("A",5,5),("B",3,10),("C",5,12),("D",16,2),("E",15,9),("F",21,21),("G",22,20)]
+dataSize=20
+data=[]
+roof=100
+for a in range(dataSize):
+    data.append(("",random.randint(0,roof),random.randint(0,roof)))
+
+popSize=10
+numGenerations=1000000
+crossoverProb=0.2
+mutationProb=0.6
+
+ga = galg.GeneticAlgorithm(data,popSize,numGenerations,crossoverProb,mutationProb,True,True)
 
 def create_individual(data):
     numClusters=3
@@ -46,7 +57,7 @@ def fitness(individual, data):
             smCluster+=pow(pow(x-pmX,2)+pow(y-pmY,2),0.5)
         #Calcula a média das distâncias (evita que clusters que tenham muitos elementos acabem com uma fitness reduzida indevidamente)
         smCluster*=clusterSize
-        fn+=smCluster
+        fn+=smCluster*2
     fn=numClusters/fn
 
     return fn
@@ -69,10 +80,14 @@ for clusterInd in range(numClusters):
     i=0
     for pt in data:
         if(clusterInd==cromossome[i]):
-            ax.plot(pt[1],pt[2],"*",c=colorset[clusterInd])
+            colorInd=clusterInd
+            if(clusterInd>=len(colorset)):
+                clusterInd-=len(colorset)
+
+            ax.plot(pt[1],pt[2],".",c=colorset[clusterInd])
             ax.text(pt[1]-0.15,pt[2]+0.4,data[i][0])
         i+=1
-for (pmx,pmy) in pmVec:
-    ax.plot(pmx,pmy,".")
+#for (pmx,pmy) in pmVec:
+#    ax.plot(pmx,pmy,".")
 
 plt.show()
