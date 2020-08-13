@@ -6,15 +6,15 @@ import numpy as np
 
 global pmVec
 global numClusters
-numClusters=8
-dataSize=25
+numClusters=3
+dataSize=100
 data=[]
-roof=500
+roof=1000
 for a in range(dataSize):
     data.append(("",random.randint(0,roof),random.randint(0,roof)))
 
 popSize=20
-numGenerations=5000
+numGenerations=500
 crossoverProb=0.4
 mutationProb=0.8
 
@@ -73,7 +73,7 @@ print (ga.best_individual())
 bestind=ga.best_individual()
 cromossome=bestind[1]
 
-colorset=["#f00","#0f0","#00f","#0cf","#ff0","#afa","#faf","#aac"]
+colorset=["#f00","#0f0","#00f","#0cf","#ff0","#2b2","#0aa","#aac"]
 fig, ax = plt.subplots()
 pmx = 0 
 pmy = 0
