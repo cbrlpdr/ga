@@ -5,30 +5,31 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 global pmVec
-pmVec=[(0,0),(0,0),(0,0)]
-
-#data = [("A",5,5),("B",3,10),("C",5,12),("D",16,2),("E",15,9),("F",21,21),("G",22,20)]
-dataSize=20
+global numClusters
+numClusters=8
+dataSize=25
 data=[]
-roof=100
+roof=500
 for a in range(dataSize):
     data.append(("",random.randint(0,roof),random.randint(0,roof)))
 
-popSize=10
-numGenerations=1000000
-crossoverProb=0.2
-mutationProb=0.6
+popSize=20
+numGenerations=5000
+crossoverProb=0.4
+mutationProb=0.8
 
 ga = galg.GeneticAlgorithm(data,popSize,numGenerations,crossoverProb,mutationProb,True,True)
 
 def create_individual(data):
-    numClusters=3
     return [random.randint(0,numClusters-1) for _ in range(len(data))]
 
+def mutate(individual):
+    mutate_index = random.randrange(len(individual))
+    individual[mutate_index]=random.randint(0,numClusters-1)
+ga.mutate_function = mutate
 ga.create_individual = create_individual
 def fitness(individual, data):
     fn = 0
-    numClusters=3
     for i in range(numClusters):
         #Pra cada cluster cria uma lista de elementos pertencentes apenas a ela
         lsElements=[]
@@ -51,13 +52,12 @@ def fitness(individual, data):
             pmY+=y
         pmX/=clusterSize
         pmY/=clusterSize
-        pmVec[i]=(pmX,pmY)
         #Calcula a soma das distâncias dos pontos da cluster até o centro dela
         for (x,y) in lsElements:
             smCluster+=pow(pow(x-pmX,2)+pow(y-pmY,2),0.5)
         #Calcula a média das distâncias (evita que clusters que tenham muitos elementos acabem com uma fitness reduzida indevidamente)
         smCluster*=clusterSize
-        fn+=smCluster*2
+        fn+=smCluster
     fn=numClusters/fn
 
     return fn
@@ -73,21 +73,17 @@ print (ga.best_individual())
 bestind=ga.best_individual()
 cromossome=bestind[1]
 
-colorset=["#f00","#0f0","#00f","#0ff"]
+colorset=["#f00","#0f0","#00f","#0cf","#ff0","#afa","#faf","#aac"]
 fig, ax = plt.subplots()
-numClusters=3
+pmx = 0 
+pmy = 0
 for clusterInd in range(numClusters):
     i=0
     for pt in data:
         if(clusterInd==cromossome[i]):
-            colorInd=clusterInd
-            if(clusterInd>=len(colorset)):
-                clusterInd-=len(colorset)
-
             ax.plot(pt[1],pt[2],".",c=colorset[clusterInd])
             ax.text(pt[1]-0.15,pt[2]+0.4,data[i][0])
         i+=1
-#for (pmx,pmy) in pmVec:
-#    ax.plot(pmx,pmy,".")
+
 
 plt.show()
